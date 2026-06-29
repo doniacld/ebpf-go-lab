@@ -24,7 +24,7 @@ int kprobe_execve(struct pt_regs *ctx) {
 		// PID exists - increment counter
 		__sync_fetch_and_add(count, 1);
 	} else {
-		// PID doesn't exist - initialize with 1
+		/* PID doesn't exist - initialize with 1 */
 		__u64 init_val = 1;
 		bpf_map_update_elem(&pid_counts, &pid, &init_val, BPF_ANY);
 	}

@@ -1,6 +1,7 @@
 //go:build ignore
 
 #include "../headers/common.h"
+#include "../headers/bpf_helpers.h"
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 

@@ -6,74 +6,39 @@
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-#define TASK_COMM_LEN 16
-#define FILENAME_LEN 256
-
-struct file_open_event {
-	__u32 pid;
-	char comm[TASK_COMM_LEN];
-	char filename[FILENAME_LEN];
-	int flags;
-};
-
+// Simple counter map: PID -> count of file opens
 struct {
-	__uint(type, BPF_MAP_TYPE_RINGBUF);
-	__uint(max_entries, 256 * 1024);
-} events SEC(".maps");
+	__uint(type, BPF_MAP_TYPE_HASH);
+	__type(key, __u32);
+	__type(value, __u64);
+	__uint(max_entries, 1024);
+} open_counts SEC(".maps");
 
-// Tracepoint version - Stable ABI, recommended for production
+// Tracepoint version - Stable ABI
 SEC("tracepoint/syscalls/sys_enter_openat")
-int trace_openat_tracepoint(struct trace_event_raw_sys_enter *ctx) {
-	struct file_open_event *event;
-
-	event = bpf_ringbuf_reserve(&events, sizeof(*event), 0);
-	if (!event)
-		return 0;
-
-	// EXERCISE 1: Extract PID from current task
+int trace_openat(struct trace_event_raw_sys_enter *ctx) {
+	// EXERCISE 1: Get current PID
 	// Hint: Use bpf_get_current_pid_tgid() and shift right by 32 bits
-	event->pid = /* YOUR CODE HERE */;
+	__u32 pid = /* YOUR CODE HERE */;
 
-	// EXERCISE 2: Get process name (comm)
-	// Hint: Use bpf_get_current_comm with event->comm and sizeof
-	/* YOUR CODE HERE */
-
-	// EXERCISE 3: Read filename from userspace
-	// Tracepoint args: ctx->args[1] is the filename pointer (const char __user *)
-	// Hint: Use bpf_probe_read_user_str(dest, size, src)
-	bpf_probe_read_user_str(/* YOUR CODE HERE */);
-
-	// EXERCISE 4: Read flags from tracepoint args
-	// Tracepoint args: ctx->args[2] contains the flags as integer
-	event->flags = /* YOUR CODE HERE */;
-
-	bpf_ringbuf_submit(event, 0);
-	return 0;
-}
-
-// Kprobe version - Works on any kernel but less stable
-// Note: do_sys_openat2 is the internal kernel function for openat
-SEC("kprobe/do_sys_openat2")
-int BPF_KPROBE(trace_openat_kprobe, int dfd, const char __user *filename, struct open_how *how) {
-	struct file_open_event *event;
-
-	event = bpf_ringbuf_reserve(&events, sizeof(*event), 0);
-	if (!event)
+	// Skip PID 0 (kernel threads)
+	if (pid == 0)
 		return 0;
 
-	event->pid = bpf_get_current_pid_tgid() >> 32;
-	bpf_get_current_comm(&event->comm, sizeof(event->comm));
+	// EXERCISE 2: Lookup existing counter for this PID
+	// Hint: Use bpf_map_lookup_elem with &open_counts and &pid
+	__u64 *count = /* YOUR CODE HERE */;
 
-	// EXERCISE 5: Read filename parameter from kernel function
-	// The filename is already a parameter (const char __user *filename)
-	// Hint: Use bpf_probe_read_user_str to read from the filename pointer
-	bpf_probe_read_user_str(/* YOUR CODE HERE */);
+	if (count) {
+		// EXERCISE 3: Increment the counter atomically
+		// Hint: Use __sync_fetch_and_add
+		/* YOUR CODE HERE */
+	} else {
+		// EXERCISE 4: Initialize a new counter with value 1
+		// Hint: Use bpf_map_update_elem with BPF_ANY flag
+		__u64 init_val = 1;
+		/* YOUR CODE HERE */
+	}
 
-	// EXERCISE 6: Extract flags from open_how struct
-	// The 'how' parameter contains a 'flags' field
-	// Hint: Use BPF_CORE_READ to safely read how->flags
-	BPF_CORE_READ_INTO(&event->flags, /* YOUR CODE HERE */);
-
-	bpf_ringbuf_submit(event, 0);
 	return 0;
 }

@@ -5,12 +5,21 @@
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
+// Forward declaration for kprobe context
+struct pt_regs;
+
+// Time helper (not in headers)
+static __u64 (*bpf_ktime_get_ns)(void) = (void *) 5;
+
 // Event structure - data sent to userspace
 struct event {
 	__u32 pid;
 	char comm[16];  // Process name
 	// EXERCISE: Add a __u64 timestamp field here
 };
+
+// Force struct event into BTF for bpf2go -type flag
+const struct event *__event_type_hint __attribute__((unused));
 
 // Ring buffer for streaming events to userspace
 // Use case: Real-time event notifications (no polling needed)
