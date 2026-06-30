@@ -36,10 +36,14 @@ func main() {
 		log.Fatalf("getting interface %s: %v", ifaceName, err)
 	}
 
-	// Attach XDP program
+	// Attach XDP program.
+	// Generic (SKB) mode works on loopback and virtual NICs, which don't
+	// support native-mode XDP. On bare metal with a supporting driver you
+	// can omit Flags for native-mode performance.
 	l, err := link.AttachXDP(link.XDPOptions{
 		Program:   objs.XdpCountPackets,
 		Interface: iface.Index,
+		Flags:     link.XDPGenericMode,
 	})
 	if err != nil {
 		log.Fatalf("attaching XDP: %v", err)

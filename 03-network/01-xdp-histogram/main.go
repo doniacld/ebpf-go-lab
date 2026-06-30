@@ -33,7 +33,9 @@ func main() {
 
 	// EXERCISE 3: Attach XDP program to interface
 	// Hint: Use link.AttachXDP with link.XDPOptions
-	// Set Program and Interface fields
+	// Set Program and Interface fields.
+	// Also set Flags: link.XDPGenericMode — generic (SKB) mode works on
+	// loopback and virtual NICs, which don't support native-mode XDP.
 	/* YOUR CODE HERE */
 
 	log.Printf("✅ XDP attached to %s", ifaceName)
