@@ -47,11 +47,11 @@ func main() {
 	defer ticker.Stop()
 
 	bucketNames := []string{
-		"Tiny   (0-64)",
-		"Small  (65-512)",
-		"Medium (513-1024)",
-		"Large  (1025-1500)",
-		"Jumbo  (>1500)",
+		"Control   (<=100)",
+		"Small     (101-200)",
+		"Medium    (201-500)",
+		"Large     (501-1000)",
+		"MTU-sized (>1000)",
 	}
 
 	for range ticker.C {

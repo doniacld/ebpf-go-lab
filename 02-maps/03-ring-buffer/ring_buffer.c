@@ -5,12 +5,6 @@
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-// Forward declaration for kprobe context
-struct pt_regs;
-
-// Time helper (not in headers)
-static __u64 (*bpf_ktime_get_ns)(void) = (void *) 5;
-
 // Event structure - data sent to userspace
 struct event {
 	__u32 pid;

@@ -40,6 +40,13 @@ typedef signed long long __s64;
 #define XDP_TX 3
 #define XDP_REDIRECT 4
 
+/* Kprobe register context.
+ * Forward declaration only: kprobe programs receive a `struct pt_regs *ctx`,
+ * but these labs never dereference it, so the opaque type is enough. Declaring
+ * it at file scope (rather than first inside a function parameter list) avoids
+ * the -Wvisibility warning from clang. */
+struct pt_regs;
+
 /* XDP metadata - packet context */
 struct xdp_md {
 	__u32 data;

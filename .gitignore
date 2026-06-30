@@ -1,2 +1,9 @@
+# Generated eBPF files (from bpf2go)
+bpf_*_bpfel.go
+bpf_*_bpfeb.go
+bpf_*_bpfel.o
+bpf_*_bpfeb.o
+
+# IDE and OS
 .idea/
-.DS_Store/
+.DS_Store

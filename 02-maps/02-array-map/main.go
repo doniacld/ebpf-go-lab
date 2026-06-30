@@ -4,6 +4,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/cilium/ebpf/link"
@@ -35,20 +38,26 @@ func main() {
 	}
 	defer kp.Close()
 	log.Println("✅ Kprobe attached to sys_execve")
-	log.Println("📊 Counting executions (run commands to generate activity)...")
+	log.Println("📊 Counting executions (Ctrl+C to exit)...")
 
-	// STEP 2: Read counter periodically
+	// Stop cleanly on Ctrl+C (SIGINT) or SIGTERM
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+	// STEP 2: Read counter periodically until interrupted
 	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 
-	for i := 0; i < 6; i++ {
-		<-ticker.C
+	for {
+		select {
+		case <-sig:
+			log.Println("\n🛑 Shutting down...")
+			return
+		case <-ticker.C:
+			// EXERCISE: Add code here to read the exec_count from the map
+			// Hint: Use objs.ExecCount.Lookup(&key, &count)
 
-		// EXERCISE: Add code here to read the exec_count from the map
-		// Hint: Use objs.ExecCount.Lookup(&key, &count)
-
-		log.Printf("📊 Total executions (PID >= %d): [implement Lookup]", cfg.MinPid)
+			log.Printf("📊 Total executions (PID >= %d): [implement Lookup]", cfg.MinPid)
+		}
 	}
-
-	log.Println("\n✅ Done!")
 }

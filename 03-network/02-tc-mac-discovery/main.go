@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
 	"time"
 
 	"github.com/cilium/ebpf"
@@ -14,15 +13,15 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatal("Usage: sudo go run . <interface>")
-	}
-
-	ifaceName := os.Args[1]
-	iface, err := net.InterfaceByName(ifaceName)
+	// Find the primary network interface (eth0 on most systems, ens4 on GCP).
+	iface, err := net.InterfaceByName("eth0")
 	if err != nil {
-		log.Fatalf("interface %s: %v", ifaceName, err)
+		iface, err = net.InterfaceByName("ens4")
+		if err != nil {
+			log.Fatalf("finding interface (tried eth0, ens4): %v", err)
+		}
 	}
+	ifaceName := iface.Name
 
 	objs := bpfObjects{}
 	if err := loadBpfObjects(&objs, nil); err != nil {
@@ -67,7 +66,6 @@ func main() {
 		var info bpfMacInfo
 
 		// EXERCISE 7: Iterate through mac_tracker map
-		// Hint: Use objs.MacTracker.Iterate()
 		iter := /* YOUR CODE HERE */
 		count := 0
 

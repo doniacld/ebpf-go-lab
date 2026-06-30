@@ -13,7 +13,6 @@ import (
 
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/ringbuf"
-	"golang.org/x/sys/unix"
 )
 
 func main() {
@@ -71,12 +70,21 @@ func main() {
 		}
 
 		eventCount++
-		log.Printf("🎯 Event #%d: PID=%d, Comm=%s",
-			eventCount,
-			event.Pid,
-			unix.ByteSliceToString(event.Comm[:]))
-		// EXERCISE: Add event.Timestamp to the log output above
+		log.Printf("🎯 Event #%d: PID=%d, Comm=%s", eventCount, event.Pid, comm(event.Comm)) // EXERCISE: also print event.Timestamp
 	}
 
 	log.Printf("\n📊 Total events received: %d", eventCount)
+}
+
+// comm converts the fixed-size C "char comm[16]" field (a [16]int8) into a
+// Go string, stopping at the first null terminator.
+func comm(raw [16]int8) string {
+	b := make([]byte, 0, len(raw))
+	for _, c := range raw {
+		if c == 0 {
+			break
+		}
+		b = append(b, byte(c))
+	}
+	return string(b)
 }

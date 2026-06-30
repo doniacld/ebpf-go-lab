@@ -4,6 +4,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/cilium/ebpf/link"
@@ -35,40 +38,51 @@ func main() {
 	log.Println("   Run commands in Terminal 2 to generate activity!")
 	log.Println()
 
-	// Periodically read hash map
+	// Stop cleanly on Ctrl+C (SIGINT) or SIGTERM
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+	// Periodically read the hash map until interrupted
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 
-	for i := 0; i < 5; i++ {
-		<-ticker.C
-		log.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-		log.Println("📊 Hash Map Contents (PID → Count):")
-
-		var (
-			key   uint32
-			value uint64
-		)
-
-		// OPERATION: Iterate over all entries in the map
-		iter := objs.PidCounts.Iterate()
-		count := 0
-		for iter.Next(&key, &value) {
-			log.Printf("  PID %d: %d executions", key, value)
-			count++
-
-			// EXERCISE 3: Add code here to delete PIDs with count == 1
-		}
-
-		if iter.Err() != nil {
-			log.Printf("❌ Error iterating map: %v", iter.Err())
-		}
-
-		if count == 0 {
-			log.Println("  (empty)")
-		} else {
-			log.Printf("\n  Total: %d PIDs tracked", count)
+	for {
+		select {
+		case <-sig:
+			log.Println("\n🛑 Shutting down...")
+			return
+		case <-ticker.C:
+			printStats(&objs)
 		}
 	}
+}
 
-	log.Println("\n✅ Done!")
+func printStats(objs *bpfObjects) {
+	log.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+	log.Println("📊 Hash Map Contents (PID → Count):")
+
+	var (
+		key   uint32
+		value uint64
+	)
+
+	// OPERATION: Iterate over all entries in the map
+	iter := objs.PidCounts.Iterate()
+	count := 0
+	for iter.Next(&key, &value) {
+		log.Printf("  PID %d: %d executions", key, value)
+		count++
+
+		// EXERCISE 3: Add code here to delete PIDs with count == 1
+	}
+
+	if iter.Err() != nil {
+		log.Printf("❌ Error iterating map: %v", iter.Err())
+	}
+
+	if count == 0 {
+		log.Println("  (empty)")
+	} else {
+		log.Printf("  Total: %d PIDs tracked", count)
+	}
 }

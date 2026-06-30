@@ -6,11 +6,11 @@
 char __license[] SEC("license") = "Dual MIT/GPL";
 
 // Histogram buckets for packet sizes
-// Index 0: Tiny (0-64 bytes)
-// Index 1: Small (65-512 bytes)
-// Index 2: Medium (513-1024 bytes)
-// Index 3: Large (1025-1500 bytes)
-// Index 4: Jumbo (>1500 bytes)
+// Index 0: Control   (<=100 bytes)   - ACK, SYN
+// Index 1: Small     (101-200 bytes) - DNS, short HTTP
+// Index 2: Medium    (201-500 bytes)
+// Index 3: Large     (501-1000 bytes)
+// Index 4: MTU-sized (>1000 bytes)
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__type(key, __u32);

@@ -16,7 +16,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -target amd64,arm64 -type config -type event bpf maps.c -- -I../headers
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -target amd64,arm64 -type config -type event bpf maps.c -- -I../../headers
 
 func main() {
 	// Load eBPF objects

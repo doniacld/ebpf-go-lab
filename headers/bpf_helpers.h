@@ -15,6 +15,7 @@ static void (*bpf_ringbuf_discard)(void *data, __u64 flags) = (void *) 133;
 /* Kprobe/tracing helpers */
 static __u64 (*bpf_get_current_pid_tgid)(void) = (void *) 14;
 static long (*bpf_get_current_comm)(void *buf, __u32 size_of_buf) = (void *) 16;
+static __u64 (*bpf_ktime_get_ns)(void) = (void *) 5;
 
 /* Network helpers */
 static __u16 (*bpf_ntohs)(__u16 val) = (void *) 9;

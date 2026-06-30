@@ -11,7 +11,7 @@ import (
 // bpf2go reads kprobe.c and generates:
 //   - bpfObjects struct (with ExecCount map and KprobeExecve program)
 //   - loadBpfObjects() function
-//   - bpf_bpfel.o and bpf_bpfeb.o (compiled eBPF bytecode)
+//   - bpf_x86_bpfel.o and bpf_arm64_bpfel.o (compiled eBPF bytecode)
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -target amd64,arm64 bpf kprobe.c -- -I../headers
 
 func main() {
