@@ -4,14 +4,22 @@ Hands-on exercises for learning eBPF programming with Go and the cilium/ebpf lib
 
 ## Structure
 
+One directory per challenge of the Isovalent "Go + eBPF Development" track,
+numbered to match the track's challenges exactly:
+
 ```
-01-lifecycle/          Demo: eBPF program lifecycle (load, attach, read)
-02-maps/              Exercises: Hash maps, array maps, ring buffers
-03-network/           Exercises: XDP packet filtering, TC traffic control
-04-tracing/           Exercises: Tracepoints for system call monitoring
-07-exam/              Final exam: Build a process activity monitor
-headers/              Shared eBPF headers (helper functions, macros)
+02-program-lifecycle/       Demo: eBPF program lifecycle (load, attach, read)
+03-maps-hash-map/           Exercise: Hash map CRUD, count execs per PID
+04-maps-array-map/          Exercise: Array maps for config and counters
+05-maps-ring-buffer/        Exercise: Stream events to userspace
+06-network-xdp-histogram/   Exercise: XDP packet size classification
+07-network-tc-mac/          Exercise: TC MAC address discovery
+08-tracing-hooks/           Exercise: Tracepoints for syscall monitoring
+10-exam/                    Final exam: Build a process activity monitor
+headers/                    Shared eBPF headers (helper functions, macros)
 ```
+
+Challenges 01 (introduction) and 09 (quiz) have no code, hence the gaps.
 
 ## Prerequisites
 
@@ -38,7 +46,7 @@ Each exercise directory contains:
 
 **Workflow:**
 ```bash
-cd 02-maps/01-hash-map
+cd 03-maps-hash-map
 go get github.com/cilium/ebpf/cmd/bpf2go  # Get bpf2go tool
 go generate                                 # Compile C → generate Go bindings
 sudo go run .                               # Run (needs sudo for eBPF)
