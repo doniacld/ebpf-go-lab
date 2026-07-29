@@ -6,14 +6,17 @@
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
-// TODO 1: Define hash map for tracking activity
-// Name: process_activity
-// Key: __u32 (PID)
-// Value: __u64 (activity count)
-// Max entries: 256
+// TODO 1: Define a hash map named process_activity, keyed by PID (__u32) with
+// an activity count (__u64), holding 256 entries. The shape is:
 //
-// Hint: Use BPF_MAP_TYPE_HASH
-// Hint: Check Challenge 03 (Maps) for hash map definition pattern
+//   struct {
+//       __uint(type, BPF_MAP_TYPE_HASH);
+//       __type(key, ...);
+//       __type(value, ...);
+//       __uint(max_entries, ...);
+//   } my_map SEC(".maps");
+//
+// Hint: You wrote one in 03-maps-hash-map/hash_map.c.
 
 /* YOUR CODE HERE */
 
@@ -24,13 +27,10 @@ int trace_exec(struct trace_event_raw_sys_enter *ctx) {
 
 	__u32 pid = /* YOUR CODE HERE */;
 
-	// TODO 3: Update activity count in process_activity map
-	// Steps:
-	// 1. Lookup existing count: bpf_map_lookup_elem(&process_activity, &pid)
-	// 2. If found: increment with __sync_fetch_and_add(count, 1)
-	// 3. If not found: initialize to 1 with bpf_map_update_elem()
+	// TODO 3: Update this PID's count in process_activity: look it up,
+	// increment it if present, initialize it to 1 if not.
 	//
-	// Hint: Check Challenge 03 hash map example for the exact pattern
+	// Hint: You wrote this same pattern in 08-tracing-hooks/file_open.c.
 
 	/* YOUR CODE HERE */
 

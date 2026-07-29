@@ -55,10 +55,11 @@ func main() {
 			log.Println("\n🛑 Shutting down...")
 			return
 		case <-ticker.C:
-			// EXERCISE 1: Add code here to read the exec_count from the map
-			// Hint: Use objs.ExecCount.Lookup(&key, &count)
+			// EXERCISE 1: read exec_count from the map into `count`.
+			// Hint: objs.ExecCount.Lookup(&key, &count)
+			var count uint64
 
-			log.Printf("📊 Total executions (PID >= %d): [implement Lookup]", cfg.MinPid)
+			log.Printf("📊 Total executions (PID >= %d): %d", cfg.MinPid, count)
 		}
 	}
 }
