@@ -70,7 +70,8 @@ func main() {
 		}
 
 		eventCount++
-		log.Printf("🎯 Event #%d: PID=%d, Comm=%s", eventCount, event.Pid, comm(event.Comm)) // EXERCISE 3: also print event.Timestamp
+		// EXERCISE 3: also print event.Timestamp
+		log.Printf("🎯 Event #%d: PID=%d, Comm=%s", eventCount, event.Pid, comm(event.Comm))
 	}
 
 	log.Printf("\n📊 Total events received: %d", eventCount)
